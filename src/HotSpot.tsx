@@ -1,11 +1,10 @@
 import * as React from 'react';
 import * as Google from 'google-maps';
 
-class Marker extends React.Component <any, any>
+class HotSpot extends React.Component <any, any>
 {
 
     googleMapsURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ2cbjJkFl5qygZYcKrcZVTzfX70G_-nY";
-    
     constructor(props : any) 
     {
         super(props);
@@ -41,20 +40,26 @@ class Marker extends React.Component <any, any>
       {
         //force number args into ints
         var centre = {lng: parseInt(this.props.centre.lng) , lat: parseInt(this.props.centre.lat) };
+        var diameter = this.props.diameter;
         var title = this.props.title;
 
         //get parent map
         var map = this.props.map;
         //const map = new google.maps.Map( document.getElementById("map"), options);
 
-        var opts = {position: centre, map : map, title : title }
-        var marker = new google.maps.Marker(opts);
+        var opts = {data: this.getHotSpot.bind(this, centre, diameter), map : map, title : title }
+        var hotspot = new google.maps.visualization.HeatmapLayer(opts);
       }
     
       render() 
       {
         return <div style={{ width: '100%', height: '100%' }}  />
       }
+
+      getHotSpot(centre : any, diameter: number)
+      {
+
+      }
 }
 
-export default Marker
+export default HotSpot

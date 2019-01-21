@@ -37,3 +37,9 @@ e.g.
 You can add attributes to the component to control it's appearance: -
 
 - Title  - String - A string to display in the title bar of the component.
+
+- ApiKey - String - Your google maps API key - it wont work without this!
+
+- ShowCurrentLocation - boolean - if true then a marker for the current location is added to the map
+
+- CurrentLocationLabel - String - The label to be shown when howering the Current Location marker (if shown)

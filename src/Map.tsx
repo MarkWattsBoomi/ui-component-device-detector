@@ -1,11 +1,10 @@
 import * as React from 'react';
-import * as Google from 'google-maps';
-import Marker from './Marker';
 
 class Map extends React.Component <any, any>
 {
+    map : any;
+    googleMapsURL=""; //https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ2cbjJkFl5qygZYcKrcZVTzfX70G_-nY";
 
-    googleMapsURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZ2cbjJkFl5qygZYcKrcZVTzfX70G_-nY";
     constructor(props : any) 
     {
         super(props);
@@ -16,6 +15,8 @@ class Map extends React.Component <any, any>
     componentDidMount() 
     {
         //request the google maps api script to be added
+        var apiKey = this.props.apiKey;
+        this.googleMapsURL="https://maps.googleapis.com/maps/api/js?key=" + apiKey;
         this.addMapsScript();
     }
 
@@ -46,37 +47,65 @@ class Map extends React.Component <any, any>
         //create a new options object
         var options = {center : centre, zoom : zoom};
 
+        var opts : any;
+
         //create a map
-        const map = new google.maps.Map( document.getElementById("map"), options);
+        this.map = new google.maps.Map( document.getElementById("map"), options);
 
-        
-        if(this.props.children)
+        if(this.props.markers)
         {
-            switch(Object.prototype.toString.call(this.props.children))
+            for(var mPos = 0 ; mPos < this.props.markers.length ; mPos++)
             {
-                case "[object Array]":
-                    var array =this.props.children as any[];
-                    for(var mPos = 0 ; mPos < array.length ; mPos++)
-                    {
-                        var position = {lng: parseFloat(array[mPos].props.center.lng) , lat: parseFloat(array[mPos].props.center.lat) };
-                        var opts = {position: position, map : map, title : array[mPos].props.title };
-                        var marker = new google.maps.Marker(opts);
-                    }
-                    break;
-
-                case "[object Object]":
-                    var obj = this.props.children as any;
-                    var position = {lng: parseFloat(obj.props.center.lng) , lat: parseFloat(obj.props.center.lat) };
-                    var opts = {position: position, map : map, title : obj.props.title };
-                    var marker = new google.maps.Marker(opts);
+                var marker = this.props.markers[mPos];
+                var position = {lng: parseFloat(marker.props.center.lng) , lat: parseFloat(marker.props.center.lat) };
+                opts = {position: position, map : this.map, title : marker.props.title };
+                var oMarker = new google.maps.Marker(opts);
             }
-            
         }
+        if(this.props.hotSpots)
+        {
+            for(var hPos = 0 ; hPos < this.props.hotSpots.length ; hPos++)
+            {
+                var hotSpot = this.props.hotSpots[hPos];
+                var position = {lng: parseFloat(hotSpot.props.center.lng) , lat: parseFloat(hotSpot.props.center.lat) };
+                var diameter = parseInt(hotSpot.props.diameter);
+                var title = hotSpot.props.title;
+                var data = this.getData(position);
+                opts = {
+                        clickable: true,
+                        strokeColor: '#0000FF',
+                        strokeOpacity: 0.8,
+                        strokeWeight: 2,
+                        fillColor: '#eeeeff',
+                        fillOpacity: 0.35,
+                        map : this.map,
+                        center:  position,
+                        title : title, 
+                        radius: diameter};
+                var oHotSpot = new google.maps.Circle(opts);
+
+                var infoWindow = new google.maps.InfoWindow({
+                    content: title
+                  });
+
+                  oHotSpot.addListener('click', function(ev){
+                    infoWindow.setPosition(ev.latLng);
+                    infoWindow.open(this.map);
+                  });
+            }
+        }
+        
+        
       }
     
       render() 
       {
         return <div style={{ width: '100%', height: '100%' }} id="map" />
+      }
+
+      getData(position : any)
+      {
+        return new google.maps.LatLng(position.lat, position.lng);
       }
 }
 

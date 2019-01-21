@@ -2,36 +2,8 @@ declare var manywho: any;
 
 import * as React from 'react';
 import Map from './Map';
-
-class Marker extends React.Component<any, any> 
-{
-    text : string = "here";
-    render()
-    {
-        const K_WIDTH = 40;
-        const K_HEIGHT = 40;
-
-        const MarkerStyle = {
-            // initially any map object has left top corner at lat lng coordinates
-            // it's on you to set object origin to 0,0 coordinates
-            position: 'absolute' as 'absolute',
-            width: K_WIDTH,
-            height: K_HEIGHT,
-            left: -K_WIDTH / 2,
-            top: -K_HEIGHT / 2,
-            border: '5px solid #f44336',
-            borderRadius: K_HEIGHT,
-            backgroundColor: 'white',
-            textAlign: 'center' as 'centre',
-            color: '#3f51b5',
-            fontSize: 16,
-            fontWeight: 'bold' as 'bold',
-            padding: 4
-          };
-
-        return <div style={MarkerStyle}>{this.text}</div>
-    }
-}
+import Marker from "./Marker";
+import HotSpot from "./HotSpot";
 
 class WhereAmI extends React.Component<any, any> 
 {   
@@ -159,7 +131,17 @@ class WhereAmI extends React.Component<any, any>
 
         var caption : string = this.getAttribute("Title") || "Select File";
         var zoom : number = parseInt(this.getAttribute("Zoom") || 18);
-        var apiKey = this.getAttribute("ApiKey") || "";
+        var apiKey = this.getAttribute("ApiKey") || this.getAttribute("apiKey") || "";
+        var showCurrentLocation =  this.getAttribute("ShowCurrentLocation") ||  "false";
+        if(showCurrentLocation.toLowerCase() == "true")
+        {
+            showCurrentLocation=true;
+        }
+        else
+        {
+            showCurrentLocation=false;
+        }
+        var currentLocationCaption = this.getAttribute("CurrentLocationLabel") || "Here";
         var width = flowModel.width + "px";
         var height=flowModel.height + "px";
 
@@ -173,12 +155,23 @@ class WhereAmI extends React.Component<any, any>
         if(this.longitude && this.latitude)
         {
             var pos = {lat: this.latitude, lng: this.longitude};
-            //var markers = [{position: pos, title: "Here"}];
-            //var options = {center:pos, zoom:zoom};
 
-            map = <Map centre={pos} zoom={zoom}>
-                <Marker center={pos} title="Here"></Marker>
-            </Map>
+            var markers : any = [];
+            var hotspots : any = [];
+
+            if(showCurrentLocation)
+            {
+                markers.push(<Marker props={this.props} center={pos} title={currentLocationCaption}></Marker>);
+                hotspots.push(<HotSpot props={this.props} center={pos} diameter={20} title="Some Area"></HotSpot>);
+            }
+
+            
+            
+
+            map =   <Map centre={pos} zoom={zoom} markers={markers} hotSpots={hotspots} apiKey={apiKey}>
+                        {markers}
+                        {hotspots}
+                    </Map>
 
         }
 

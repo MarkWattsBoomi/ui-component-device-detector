@@ -1,7 +1,7 @@
 {
-  "name": "file-picker",
+  "name": "device-detector",
   "version": "1.0.0",
-  "description": "file picker that saves base 64 image into string",
+  "description": "device details and location controls",
   "main": "index.js",
   "scripts": {
     "dev": "webpack-dev-server",
@@ -23,7 +23,7 @@
     "react-dom": "^16.2.0"
   },
   "devDependencies": {
-    "awesome-typescript-loader": "^3.4.1",
+    "awesome-typescript-loader": "^5.0.0",
     "css-loader": "^0.28.9",
     "extract-text-webpack-plugin": "^3.0.0",
     "source-map-loader": "^0.2.3",
